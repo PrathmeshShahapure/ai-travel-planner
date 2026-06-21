@@ -62,3 +62,26 @@ export const getTripById = async (req, res) => {
       });
     }
   };
+
+  export const deleteTrip = async (req, res) => {
+    try {
+      const trip = await Trip.findOneAndDelete({
+        _id: req.params.id,
+        userId: req.user.id,
+      });
+  
+      if (!trip) {
+        return res.status(404).json({
+          message: "Trip not found",
+        });
+      }
+  
+      res.status(200).json({
+        message: "Trip deleted successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
