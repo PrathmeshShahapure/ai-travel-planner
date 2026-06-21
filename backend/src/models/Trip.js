@@ -43,6 +43,15 @@ const tripSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    mustDo: {
+        type: [String],
+        default: [],
+      },
+      
+      travelTips: {
+        type: [String],
+        default: [],
+      },
   },
   {
     timestamps: true,
