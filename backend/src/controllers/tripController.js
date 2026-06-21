@@ -63,7 +63,7 @@ export const getTripById = async (req, res) => {
     }
   };
 
-  export const deleteTrip = async (req, res) => {
+export const deleteTrip = async (req, res) => {
     try {
       const trip = await Trip.findOneAndDelete({
         _id: req.params.id,
@@ -79,6 +79,81 @@ export const getTripById = async (req, res) => {
       res.status(200).json({
         message: "Trip deleted successfully",
       });
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
+
+export const addActivity = async (req, res) => {
+    try {
+      const { day, activity } = req.body;
+  
+      const trip = await Trip.findOne({
+        _id: req.params.id,
+        userId: req.user.id,
+      });
+  
+      if (!trip) {
+        return res.status(404).json({
+          message: "Trip not found",
+        });
+      }
+  
+      const dayPlan = trip.itinerary.find(
+        (item) => item.day === day
+      );
+  
+      if (!dayPlan) {
+        return res.status(404).json({
+          message: "Day not found",
+        });
+      }
+  
+      dayPlan.activities.push(activity);
+      trip.markModified("itinerary");
+      await trip.save();
+  
+      res.status(200).json(trip);
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
+export const removeActivity = async (req, res) => {
+    try {
+      const { day, activity } = req.body;
+  
+      const trip = await Trip.findOne({
+        _id: req.params.id,
+        userId: req.user.id,
+      });
+  
+      if (!trip) {
+        return res.status(404).json({
+          message: "Trip not found",
+        });
+      }
+  
+      const dayPlan = trip.itinerary.find(
+        (item) => item.day === day
+      );
+  
+      if (!dayPlan) {
+        return res.status(404).json({
+          message: "Day not found",
+        });
+      }
+  
+      dayPlan.activities = dayPlan.activities.filter(
+        item => item !== activity
+      );
+      trip.markModified("itinerary");
+      await trip.save();
+  
+      res.status(200).json(trip);
     } catch (error) {
       res.status(500).json({
         message: error.message,
