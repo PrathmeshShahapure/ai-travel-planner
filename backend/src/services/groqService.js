@@ -67,15 +67,13 @@ export const generateTravelPlan = async (
 export const regenerateDayPlan = async (
   destination,
   day,
-  instruction
 ) => {
   const prompt = `
 Destination: ${destination}
 
 Regenerate Day ${day}.
 
-User Instruction:
-${instruction}
+User Instruction:regenerate the day activities for the given day.
 
 Return ONLY valid JSON:
 

@@ -3,12 +3,128 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import api from "../../../lib/axios";
+import { useRouter } from "next/navigation";
 
 export default function TripDetailsPage() {
   const params = useParams();
+  const router = useRouter();
 
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [newActivity, setNewActivity] = useState("");
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  const handleAddActivity = async (dayNumber) => {
+    if (!newActivity.trim()) return;
+  
+    try {
+      await api.patch(
+        `/trips/${trip._id}/add-activity`,
+        {
+          day: dayNumber,
+          activity: newActivity,
+        }
+      );
+  
+      setTrip((prev) => ({
+        ...prev,
+        itinerary: prev.itinerary.map((day) =>
+          day.day === dayNumber
+            ? {
+                ...day,
+                activities: [
+                  ...day.activities,
+                  newActivity,
+                ],
+              }
+            : day
+        ),
+      }));
+  
+      setNewActivity("");
+      setSelectedDay(null);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+ const handleRemoveActivity = async (
+  dayNumber,
+  activity
+) => {
+  try {
+    await api.delete(
+      `/trips/${trip._id}/remove-activity`,
+      {
+        data: {
+          day: dayNumber,
+          activity,
+        },
+      }
+    );
+
+    setTrip((prev) => ({
+      ...prev,
+      itinerary: prev.itinerary.map((day) =>
+        day.day === dayNumber
+          ? {
+              ...day,
+              activities:
+                day.activities.filter(
+                  (item) =>
+                    item !== activity
+                ),
+            }
+          : day
+      ),
+    }));
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleRegenerateDay = async (
+    dayNumber
+  ) => {
+    try {
+      const response = await api.patch(
+        `/trips/${trip._id}/regenerate-day`,
+        {
+          day: dayNumber,
+        }
+      );
+  
+      const regeneratedDay =
+        response.data;
+  
+      setTrip((prev) => ({
+        ...prev,
+        itinerary: prev.itinerary.map(
+          (day) =>
+            day.day === dayNumber
+              ? regeneratedDay
+              : day
+        ),
+      }));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleDeleteTrip = async () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this trip?"
+    );
+  
+    if (!confirmed) return;
+  
+    try {
+      await api.delete(`/trips/${trip._id}`);
+  
+      router.push("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const fetchTrip = async () => {
@@ -170,9 +286,9 @@ export default function TripDetailsPage() {
         </h2>
 
         <div className="space-y-6">
-          {trip.itinerary?.map((day) => (
+          {trip.itinerary?.map((day, index) => (
             <div
-              key={day.day}
+            key={`${day.day}-${index}`}
               className="rounded-3xl border p-6"
             >
               <div className="flex items-center justify-between mb-4">
@@ -181,21 +297,25 @@ export default function TripDetailsPage() {
                 </h3>
 
                 <button
-                  className="
-                    rounded-xl
-                    bg-black
-                    px-4
-                    py-2
-                    text-white
-                    text-sm
-                  "
-                >
-                  Regenerate Day
-                </button>
+  onClick={() =>
+    handleRegenerateDay(day.day)
+  }
+  className="
+    rounded-xl
+    bg-black
+    px-4
+    py-2
+    text-white
+    text-sm
+    hover:cursor-pointer
+  "
+>
+  Regenerate Day
+</button>
               </div>
 
               <ul className="space-y-2">
-                {day.activities.map(
+                {day.activities?.map(
                   (
                     activity,
                     activityIndex
@@ -216,34 +336,99 @@ export default function TripDetailsPage() {
                       </span>
 
                       <button
-                        className="
-                          text-red-500
-                          text-sm
-                        "
-                      >
-                        Remove
-                      </button>
+  onClick={() =>
+    handleRemoveActivity(
+      day.day,
+      activity
+    )
+  }
+  className="
+    text-red-500
+    text-sm
+    cursor-pointer
+  "
+>
+  Remove
+</button>
                     </li>
                   )
                 )}
               </ul>
 
-              <button
-                className="
-                  mt-4
-                  rounded-xl
-                  border
-                  px-4
-                  py-2
-                  text-sm
-                "
-              >
-                + Add Activity
-              </button>
+              <div className="mt-4">
+  {selectedDay === day.day ? (
+    <div className="flex gap-2">
+      <input
+        type="text"
+        placeholder="New Activity"
+        value={newActivity}
+        onChange={(e) =>
+          setNewActivity(
+            e.target.value
+          )
+        }
+        className="
+          flex-1
+          rounded-xl
+          border
+          p-2
+        "
+      />
+
+      <button
+        onClick={() =>
+          handleAddActivity(
+            day.day
+          )
+        }
+        className="
+          rounded-xl
+          bg-black
+          px-4
+          text-white
+        "
+      >
+        Save
+      </button>
+    </div>
+  ) : (
+    <button
+      onClick={() =>
+        setSelectedDay(day.day)
+      }
+      className="
+        rounded-xl
+        border
+        px-4
+        py-2
+        text-sm
+        hover:cursor-pointer
+      "
+    >
+      + Add Activity
+    </button>
+  )}
+</div>
             </div>
           ))}
         </div>
+        <div className="mt-4">
+  <button
+    onClick={handleDeleteTrip}
+    className="
+      rounded-xl
+      bg-red-500
+      px-4
+      py-2
+      text-black
+      hover:cursor-pointer
+    "
+  >
+    Delete Trip
+  </button>
+</div>
       </section>
+  
     </main>
   );
 }

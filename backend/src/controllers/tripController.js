@@ -162,7 +162,7 @@ export const removeActivity = async (req, res) => {
   };
 export const regenerateDay = async (req, res) => {
     try {
-      const { day, instruction } = req.body;
+      const { day } = req.body;
   
       const trip = await Trip.findOne({
         _id: req.params.id,
@@ -176,16 +176,14 @@ export const regenerateDay = async (req, res) => {
       const aiResponse = await regenerateDayPlan(
         trip.destination,
         day,
-        instruction
       );
   
       dayPlan.activities = aiResponse.activities;
   
       trip.markModified("itinerary");
-   console.log(dayPlan);
       await trip.save();
   
-      res.status(200).json(trip);
+      res.status(200).json(dayPlan);
   
     } catch (error) {
       res.status(500).json({
