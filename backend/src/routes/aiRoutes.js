@@ -4,10 +4,6 @@ import { generateTrip } from "../controllers/aiController.js";
 
 const router = express.Router();
 
-router.post(
-  "/generate",
-  authMiddleware,
-  generateTrip
-);
+router.post("/generate",authMiddleware,generateTrip);
 
 export default router;

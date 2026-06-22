@@ -1,5 +1,5 @@
 import Trip from "../models/Trip.js";
-
+import { regenerateDayPlan } from "../services/groqService.js";
 export const createTrip = async (req, res) => {
   try {
     const {
@@ -154,6 +154,39 @@ export const removeActivity = async (req, res) => {
       await trip.save();
   
       res.status(200).json(trip);
+    } catch (error) {
+      res.status(500).json({
+        message: error.message,
+      });
+    }
+  };
+export const regenerateDay = async (req, res) => {
+    try {
+      const { day, instruction } = req.body;
+  
+      const trip = await Trip.findOne({
+        _id: req.params.id,
+        userId: req.user.id,
+      });
+  
+      const dayPlan = trip.itinerary.find(
+        item => item.day === day
+      );
+  
+      const aiResponse = await regenerateDayPlan(
+        trip.destination,
+        day,
+        instruction
+      );
+  
+      dayPlan.activities = aiResponse.activities;
+  
+      trip.markModified("itinerary");
+   console.log(dayPlan);
+      await trip.save();
+  
+      res.status(200).json(trip);
+  
     } catch (error) {
       res.status(500).json({
         message: error.message,

@@ -63,3 +63,56 @@ export const generateTravelPlan = async (
   });
   return JSON.parse(response.choices[0].message.content);
 };
+
+export const regenerateDayPlan = async (
+  destination,
+  day,
+  instruction
+) => {
+  const prompt = `
+Destination: ${destination}
+
+Regenerate Day ${day}.
+
+User Instruction:
+${instruction}
+
+Return ONLY valid JSON:
+
+{
+  "day": ${day},
+  "activities": [ "activity 1",
+    "activity 2",
+    "activity 3"]
+}
+
+Activities must be an array of strings.
+Example:
+{
+  "day": 1,
+  "activities": [
+    "Visit Sinhagad Fort",
+    "Explore Katraj Ghat",
+    "Walk along the Mula River"
+  ]
+}
+
+Do not include markdown.
+Return JSON only.
+`;
+
+  const response = await groq.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+    temperature: 0.7,
+  });
+
+  return JSON.parse(
+    response.choices[0].message.content
+  );
+};
