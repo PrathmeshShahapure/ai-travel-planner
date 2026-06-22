@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import api from "../../lib/axios";
 import TripCard from "../../components/TripCard";
 import CreateTripSheet from "../../components/CreateTripSheet";
+import Navbar from "../../components/Navbar";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardPage() {
   const [trips, setTrips] = useState([]);
@@ -30,18 +32,10 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold">
-          AI Travel Planner
-        </h1>
-
-        <p className="mt-2 text-gray-500">
-          Plan smarter. Travel safer.
-        </p>
-      </div>
-
+    <main className="mx-auto max-w-7xl px-2 py-10">
+      
+      <Navbar />
+     
       {/* Trips Section */}
       <div>
         <h2 className="mb-6 text-2xl font-semibold">
@@ -49,7 +43,9 @@ export default function DashboardPage() {
         </h2>
 
         {loading ? (
-          <p>Loading trips...</p>
+          <p className=" flex items-center justify-center mt-10 ">
+            <Loader2 className="animate-spin" size={20} />
+          </p>
         ) : trips.length === 0 ? (
           <div className="rounded-2xl border p-8 text-center">
             No trips found.

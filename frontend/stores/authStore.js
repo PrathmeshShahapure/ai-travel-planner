@@ -3,6 +3,7 @@ import { create } from "zustand";
 const useAuthStore = create((set) => ({
   token: null,
   isAuthenticated: false,
+  hasHydrated: false,
 
   login: (token) => {
     localStorage.setItem("token", token);
@@ -10,6 +11,7 @@ const useAuthStore = create((set) => ({
     set({
       token,
       isAuthenticated: true,
+      hasHydrated: true,
     });
   },
 
@@ -19,18 +21,18 @@ const useAuthStore = create((set) => ({
     set({
       token: null,
       isAuthenticated: false,
+      hasHydrated: true,
     });
   },
 
   hydrate: () => {
     const token = localStorage.getItem("token");
 
-    if (token) {
-      set({
-        token,
-        isAuthenticated: true,
-      });
-    }
+    set({
+      token,
+      isAuthenticated: !!token,
+      hasHydrated: true,
+    });
   },
 }));
 

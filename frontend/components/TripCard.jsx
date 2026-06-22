@@ -9,13 +9,13 @@ export default function TripCard({ trip }) {
   return (
     <div
       onClick={() => router.push(`/trips/${trip._id}`)}
-      className="cursor-pointer rounded-3xl border border-white/20 bg-white/10 backdrop-blur-xl p-6 transition-all hover:scale-[1.02] hover:shadow-xl"
+      className=" rounded-xl border border-white/10
+  bg-white p-6  shadow-[0_20px_50px_rgba(8,_15,_52,_0.08)] transition-all
+  hover:-translate-y-1 hover:shadow-[0_30px_60px_rgba(8,_15,_52,_0.12)] hover:border-gray-200"
     >
       <div className="flex items-center gap-2 mb-4">
         <MapPin size={18} />
-        <h2 className="text-xl font-semibold">
-          {trip.destination}
-        </h2>
+        <h2 className="text-xl font-semibold">{trip.destination}</h2>
       </div>
 
       <div className="space-y-3 text-sm text-gray-500">
@@ -29,12 +29,10 @@ export default function TripCard({ trip }) {
           <span>{trip.budgetType} Budget</span>
         </div>
 
-        <div>
-          Planned Days: {trip.itinerary?.length || 0}
-        </div>
+        <div>Planned Days: {trip.itinerary?.length || 0}</div>
       </div>
 
-      <button className="mt-6 w-full rounded-xl bg-black py-3 text-white font-medium">
+      <button className="mt-6 w-full cursor-pointer rounded-xl bg-black py-3 text-white font-medium">
         View Trip →
       </button>
     </div>

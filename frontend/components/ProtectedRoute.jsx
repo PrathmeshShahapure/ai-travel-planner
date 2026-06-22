@@ -11,7 +11,7 @@ export default function ProtectedRoute({
 
   const {
     hydrate,
-    isAuthenticated,
+    isAuthenticated, hasHydrated,
   } = useAuthStore();
 
   useEffect(() => {
@@ -19,12 +19,19 @@ export default function ProtectedRoute({
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
+    if (
+      hasHydrated &&
+      !isAuthenticated
+    ) {
+      router.replace("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [
+    hasHydrated,
+    isAuthenticated,
+    router,
+  ]);
 
-  if (!isAuthenticated) {
+  if (!hasHydrated) {
     return (
       <div className="p-10 flex items-center justify-center">
         Checking authentication...
