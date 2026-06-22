@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ai-travel-planner-backend-moji.onrender.com",
+  baseURL: "https://ai-travel-planner-backend-moji.onrender.com/api",
 });
 
 api.interceptors.request.use((config) => {
