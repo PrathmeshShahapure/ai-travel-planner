@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import api from "../../lib/axios";
 import TripCard from "../../components/TripCard";
 import CreateTripSheet from "../../components/CreateTripSheet";
+import ProtectedRoute from "../../components/ProtectedRoute";
 
 export default function DashboardPage() {
   const [trips, setTrips] = useState([]);
@@ -28,6 +29,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
+    <ProtectedRoute>
     <main className="mx-auto max-w-6xl px-4 py-10">
       {/* Header */}
       <div className="mb-10">
@@ -81,5 +83,6 @@ export default function DashboardPage() {
   }
 />
     </main>
+    </ProtectedRoute>
   );
 }
