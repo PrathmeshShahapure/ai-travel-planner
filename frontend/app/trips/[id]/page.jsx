@@ -136,7 +136,7 @@ export default function TripDetailsPage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <main className="mx-auto px-4 py-10">
       <Navbar />
       <div className="mb-10">
         <h1 className="text-4xl font-bold">{trip.destination}</h1>
